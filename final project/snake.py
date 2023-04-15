@@ -83,6 +83,7 @@ class snake(object):
                 if i == len(self.body)-1:
                     self.turns.pop(p)
             else:
+                # if snake exits the border of the grid, it comes back from the other side
                 if c.dirnx == -1 and c.pos[0] <= 0: c.pos = (c.rows-1, c.pos[1])
                 elif c.dirnx == 1 and c.pos[0] >= c.rows-1: c.pos = (0,c.pos[1])
                 elif c.dirny == 1 and c.pos[1] >= c.rows-1: c.pos = (c.pos[0], 0)
