@@ -1,6 +1,17 @@
-# Depth-first search algorithm
-def dfs():
-    return 0
+import util
+
+# Depth-first search algorithm -- stack
+def dfs(board, snake, food):
+    stack = util.Stack()
+    visited = []
+
+    stack.push(snake)
+
+    # while not stack.isEmpty():
+    #     current_state = stack.pop()
+
+    #     if current_state == food:
+    #         return get_path
 
 
 
@@ -8,6 +19,6 @@ def dfs():
 
 
 
-# Breadth-first search algorithm
-# Uniform cost search algorithm
-# A* search algorithm
+# Breadth-first search algorithm -- queue
+# Uniform cost search algorithm -- priority queue, with all priorities = 1
+# A* search algorithm -- priority queue
