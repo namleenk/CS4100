@@ -4,6 +4,8 @@ import random
 import pygame
 import tkinter as tk
 from tkinter import messagebox
+
+from util import manhattanDistance
  
 class cube(object):
     rows = 20
@@ -40,21 +42,26 @@ class cube(object):
 class snake(object):
     body = []
     turns = {}
+
     def __init__(self, color, pos):
         self.color = color
         self.head = cube(pos)
         self.body.append(self.head)
         self.dirnx = 0
         self.dirny = 1
- 
+
+        # since snake can wrap around the board, the walls analogous to pacman are the snake's body itself
+        self.walls = []
+        self.walls.append(self.head)
+        self.score = 0
+    
     def move(self):
+        keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
- 
-            keys = pygame.key.get_pressed()
- 
-            #for key in keys:
+        
+        for key in keys:
             if keys[pygame.K_LEFT]:
                 self.dirnx = -1
                 self.dirny = 0
@@ -84,11 +91,16 @@ class snake(object):
                     self.turns.pop(p)
             else:
                 # if snake exits the border of the grid, it comes back from the other side
-                if c.dirnx == -1 and c.pos[0] <= 0: c.pos = (c.rows-1, c.pos[1])
-                elif c.dirnx == 1 and c.pos[0] >= c.rows-1: c.pos = (0,c.pos[1])
-                elif c.dirny == 1 and c.pos[1] >= c.rows-1: c.pos = (c.pos[0], 0)
-                elif c.dirny == -1 and c.pos[1] <= 0: c.pos = (c.pos[0],c.rows-1)
-                else: c.move(c.dirnx,c.dirny)
+                if c.dirnx == -1 and c.pos[0] <= 0:
+                    c.pos = (c.rows-1, c.pos[1])
+                elif c.dirnx == 1 and c.pos[0] >= c.rows-1:
+                    c.pos = (0,c.pos[1])
+                elif c.dirny == 1 and c.pos[1] >= c.rows-1:
+                    c.pos = (c.pos[0], 0)
+                elif c.dirny == -1 and c.pos[1] <= 0:
+                    c.pos = (c.pos[0],c.rows-1)
+                else:
+                    c.move(c.dirnx,c.dirny)
        
  
     def reset(self, pos):
@@ -98,6 +110,9 @@ class snake(object):
         self.turns = {}
         self.dirnx = 0
         self.dirny = 1
+
+        self.walls = self.body
+        self.score = 0
  
  
     def addCube(self):
@@ -106,13 +121,20 @@ class snake(object):
  
         if dx == 1 and dy == 0:
             self.body.append(cube((tail.pos[0]-1,tail.pos[1])))
+            self.walls = self.body
         elif dx == -1 and dy == 0:
             self.body.append(cube((tail.pos[0]+1,tail.pos[1])))
+            self.walls = self.body
         elif dx == 0 and dy == 1:
             self.body.append(cube((tail.pos[0],tail.pos[1]-1)))
+            self.walls = self.body
         elif dx == 0 and dy == -1:
             self.body.append(cube((tail.pos[0],tail.pos[1]+1)))
+            self.walls = self.body
  
+        global all_walls
+        all_walls = self.body
+
         self.body[-1].dirnx = dx
         self.body[-1].dirny = dy
        
@@ -123,7 +145,63 @@ class snake(object):
                 c.draw(surface, True)
             else:
                 c.draw(surface)
- 
+
+    # return the start state of the snake (the head's position)
+    def getStartState(self):
+        return self.head.pos
+    
+    # snake has reached the food
+    def isGoalState(self, curr_pos):
+        return curr_pos == food.pos
+    
+    # checks if the given position is in bounds and not hitting itself
+    def isValid(self, pos):
+        x, y = pos
+        if (x < 0 or x > rows - 1 or y < 0 or y > rows - 1):
+            return False
+        if pos in self.walls:
+            return False
+        return True
+    
+    def getDirection(self, curr_state, next_state):
+        currx, curry = curr_state
+        nextx, nexty = next_state
+
+        if nextx > currx:
+            return 'right'
+        elif currx < nextx:
+            return 'left'
+        elif nexty > curry:
+            return 'down'
+        elif nexty < curry:
+            return 'up'
+        
+    def getCost(self, curr_state, next_state):
+        return manhattanDistance(curr_state, next_state)
+    
+    # Successor(s) of snake could be other locaitons on the grid or a food location
+    # Similar to pacman, we will return the state, action, and cost of the successor(s)
+    def getSuccessors(self, curr_state):
+        walls_pos = []
+        
+        # copy of list of all the walls in the current state
+        for wall in self.walls():
+            walls_pos.append(wall)
+        
+        # list of successor states
+        successors = []
+        x, y = curr_state
+        # snake can either go left, right, up, or down as next moves
+        moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+        for move in moves:
+            next_state = (curr_state[0] + move[0], curr_state[1] + move[1])
+            if self.isValid(next_state):
+                direction = self.getDirection(curr_state, next_state)
+                cost = self.getCost(curr_state, next_state)
+                successors.append(next_state, direction, cost)
+
+        return successors
  
 def drawGrid(w, rows, surface):
     sizeBtwn = w // rows
@@ -171,6 +249,9 @@ def message_box(subject, content):
         root.destroy()
     except:
         pass
+
+food = []
+startState = 0
  
  
 def main():
