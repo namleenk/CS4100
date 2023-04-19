@@ -6,6 +6,8 @@ import tkinter as tk
 from tkinter import messagebox
 
 from util import manhattanDistance
+
+pygame.init()
  
 class cube(object):
     rows = 20
@@ -34,8 +36,7 @@ class cube(object):
             circleMiddle = (i*dis+centre-radius,j*dis+8)
             circleMiddle2 = (i*dis + dis -radius*2, j*dis+8)
             pygame.draw.circle(surface, (0,0,0), circleMiddle, radius)
-            pygame.draw.circle(surface, (0,0,0), circleMiddle2, radius)
-       
+            pygame.draw.circle(surface, (0,0,0), circleMiddle2, radius)     
  
  
  
@@ -61,26 +62,26 @@ class snake(object):
             if event.type == pygame.QUIT:
                 pygame.quit()
         
-        for key in keys:
-            if keys[pygame.K_LEFT]:
-                self.dirnx = -1
-                self.dirny = 0
-                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+        # added an additional check to make sure the current direction is not the opposite of the key pressed
+        if keys[pygame.K_LEFT] and not self.dirnx == 1:
+            self.dirnx = -1
+            self.dirny = 0
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
-            elif keys[pygame.K_RIGHT]:
-                self.dirnx = 1
-                self.dirny = 0
-                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+        elif keys[pygame.K_RIGHT] and not self.dirnx == -1:
+            self.dirnx = 1
+            self.dirny = 0
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
-            elif keys[pygame.K_UP]:
-                self.dirnx = 0
-                self.dirny = -1
-                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+        elif keys[pygame.K_UP] and not self.dirny == 1:
+            self.dirnx = 0
+            self.dirny = -1
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
-            elif keys[pygame.K_DOWN]:
-                self.dirnx = 0
-                self.dirny = 1
-                self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+        elif keys[pygame.K_DOWN] and not self.dirny == -1:
+            self.dirnx = 0
+            self.dirny = 1
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
  
         for i, c in enumerate(self.body):
             p = c.pos[:]
@@ -101,7 +102,48 @@ class snake(object):
                     c.pos = (c.pos[0],c.rows-1)
                 else:
                     c.move(c.dirnx,c.dirny)
-       
+
+    # function to make the snake move given some actions - for the search algorithms
+    def action_move(self, key):
+        if key == 'left' and not self.dirnx == 1:
+            self.dirnx = -1
+            self.dirny = 0
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+        elif key == 'right' and not self.dirnx == -1:
+            self.dirnx = 1
+            self.dirny = 0
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+        elif key == 'up' and not self.dirny == 1:
+            self.dirnx = 0
+            self.dirny = -1
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+        elif key == 'down' and not self.dirny == -1:
+            self.dirnx = 0
+            self.dirny = 1
+            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+
+        # same as for the manual move function
+        for i, c in enumerate(self.body):
+            p = c.pos[:]
+            if p in self.turns:
+                turn = self.turns[p]
+                c.move(turn[0],turn[1])
+                if i == len(self.body)-1:
+                    self.turns.pop(p)
+            else:
+                # if snake exits the border of the grid, it comes back from the other side
+                if c.dirnx == -1 and c.pos[0] <= 0:
+                    c.pos = (c.rows-1, c.pos[1])
+                elif c.dirnx == 1 and c.pos[0] >= c.rows-1:
+                    c.pos = (0,c.pos[1])
+                elif c.dirny == 1 and c.pos[1] >= c.rows-1:
+                    c.pos = (c.pos[0], 0)
+                elif c.dirny == -1 and c.pos[1] <= 0:
+                    c.pos = (c.pos[0],c.rows-1)
+                else:
+                    c.move(c.dirnx,c.dirny)
+
+
  
     def reset(self, pos):
         self.head = cube(pos)
@@ -273,19 +315,24 @@ def main():
             s.addCube()
             snack = cube(randomSnack(rows, s), color=(0,255,0))
  
+        # it seems like this code is not being run
         for x in range(len(s.body)):
+            # loop through every cube in snake's body and checks if its position is the same as the cubes that come after it
             if s.body[x].pos in list(map(lambda z:z.pos,s.body[x+1:])):
-                print('Score: ', len(s.body))
-                message_box('You Lost!', 'Play again...')
+                 # show a game over screen
+                font = pygame.font.SysFont("helvetica", 72)
+                text = font.render("Game Over!", 1, (255,0,0))
+                win.blit(text, (win.get_width()/2 - text.get_width()/2, win.get_height()/2 - text.get_height()/2))
+                pygame.display.update()
+                pygame.time.delay(2000)
+
                 s.reset((10,10))
                 break
- 
-           
+                # print('Score: ', len(s.body))
+                # # message_box('You Lost!', 'Play again...')
+                # messagebox.showinfo('Continue','OK')
+                # s.reset((10,10))
+                # break
+
         redrawWindow(win)
- 
-       
-    pass
- 
- 
- 
 main()
