@@ -142,8 +142,6 @@ class snake(object):
                     c.pos = (c.pos[0],c.rows-1)
                 else:
                     c.move(c.dirnx,c.dirny)
-
-
  
     def reset(self, pos):
         self.head = cube(pos)
@@ -205,6 +203,7 @@ class snake(object):
             return False
         return True
     
+    # returns the new direction snake will be moving when going from current state to the next state
     def getDirection(self, curr_state, next_state):
         currx, curry = curr_state
         nextx, nexty = next_state
@@ -218,6 +217,7 @@ class snake(object):
         elif nexty < curry:
             return 'up'
         
+    # returns the cost of going from the current state to the next state
     def getCost(self, curr_state, next_state):
         return manhattanDistance(curr_state, next_state)
     
@@ -232,12 +232,13 @@ class snake(object):
         
         # list of successor states
         successors = []
-        x, y = curr_state
+        #x, y = curr_state
         # snake can either go left, right, up, or down as next moves
         moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
         for move in moves:
             next_state = (curr_state[0] + move[0], curr_state[1] + move[1])
+            # if the next state is valid, add it to the list of successors along with its direction and cost
             if self.isValid(next_state):
                 direction = self.getDirection(curr_state, next_state)
                 cost = self.getCost(curr_state, next_state)
