@@ -24,6 +24,7 @@ def dfs(snake: snake):
 
     total_length = 0
     num_paths = 0
+    num_actions = 0
 
     startState = snake.getStartState()
     stack.push((startState, []))
@@ -50,12 +51,15 @@ def dfs(snake: snake):
                 if successor[0] not in visited:
                     validState = (successor[0], path + [successor[1]])
                     stack.push(validState)
+                    num_actions += 1
+                    #print('successor added - dfs')
 
     if num_paths == 0:
         return 0
     else:
         average_length = total_length / num_paths
         
+    #print('num_actions dfs = ', num_actions)
     return average_length
 
 # Breadth-first search algorithm
@@ -77,6 +81,7 @@ def bfs(snake: snake):
 
     total_length = 0
     num_paths = 0
+    num_actions = 0
 
     startState = snake.getStartState()
     queue.push((startState, []))
@@ -103,12 +108,15 @@ def bfs(snake: snake):
                 if successor[0] not in visited:
                     validState = (successor[0], path + [successor[1]])
                     queue.push(validState)
+                    num_actions +=1
+
 
     if num_paths == 0:
         return 0
     else:
         average_length = total_length / num_paths
 
+    #print('num_actions bfs = ', num_actions)
     return average_length
 
 # Uniform Cost Search algorithm --> all states have the same priority
@@ -119,6 +127,7 @@ def ucs(snake: snake):
 
     total_length = 0
     num_paths = 0
+    num_actions = 0
 
     startState = snake.getStartState()
     #                  (state,    path, cost) priority
@@ -143,12 +152,14 @@ def ucs(snake: snake):
                 if successor[0] not in visited:
                     validState = (successor[0], path + [successor[1]], cost + successor[2])
                     priorityQueue.push(validState, cost + successor[2])
+                    num_actions += 1
     
     if num_paths == 0:
         return 0
     else:
         average_length = total_length / num_paths
 
+    #print('num_actions = ', num_actions)
     return average_length
 
 def astar(snake: snake, heuristic):
@@ -218,6 +229,12 @@ for i in range(0, len(food_list)):
     total_average_length_bfs += average_length_bfs
     total_average_length_ucs += average_length_ucs
     total_average_length_astar += average_length_astar
+
+for i in range(0, len(food_list)):
+    average_length_dfs = dfs(s)
+    average_length_bfs = bfs(s)
+    total_average_length_dfs += average_length_dfs
+    total_average_length_bfs += average_length_bfs
 
 print("Average length of DFS:", round(total_average_length_dfs / num_iterations))
 print("Average length of BFS:", round(total_average_length_bfs / num_iterations))
