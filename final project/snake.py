@@ -228,7 +228,21 @@ class snake(object):
 
         return successors
 
+# arbitrary heuristic to run the a* search algorithm
+def nullHeuristic(s: snake, food: cube):
+    return 0
 
+# heuristic to calculate the shortest path distance, in a straight line
+def euclideanHeuristic(s: snake, food: cube):
+    sx1, sy1 = s
+    #fx2, fy2 = food.pos
+    fx2, fy2 = food
+    return round(((fx2 - sx1) ** 2 + (fy2 - sy1) ** 2) ** 0.5)
+
+def manhattanHeuristic(s: snake, food: cube):
+    sx1, sy1 = s
+    fx2, fy2 = food
+    return round(abs(sx1 - fx2) + abs(sy1 - fy2))
 
 # this shows the action_move function works -- REMOVE BEFORE SUBMITTING
 def show_moves(s):
@@ -249,3 +263,10 @@ def show_moves(s):
 s = snake((10, 10))
 #show_moves(s)
 #s.valid_pos((7, 15))
+foodx = random.randrange(19)
+foody = random.randrange(19)
+food = (foodx, foody)
+g, h = s.head.pos
+# print('g', g)
+# print('h', h)
+# print(euclideanHeuristic(s, food))

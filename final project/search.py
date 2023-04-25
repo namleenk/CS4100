@@ -1,7 +1,9 @@
 #from snake2 import snake #, visualize_search
 import random
-from snake import snake
-import util
+from snake import manhattanHeuristic, nullHeuristic, snake, euclideanHeuristic
+from util import Stack, Queue, PriorityQueue
+import time
+
 
 # Depth-first search algorithm
 def dfs(snake: snake):
@@ -17,7 +19,7 @@ def dfs(snake: snake):
     - at the end, return the complete path
 
     """
-    stack = util.Stack()
+    stack = Stack()
     visited = set()
 
     total_length = 0
@@ -30,33 +32,30 @@ def dfs(snake: snake):
     while not stack.isEmpty():
         state, path = stack.pop()
 
-        # if we've reached the goal state, return the path
+        # if we've reached the goal state, calculate the length of the path and continue to the return
+        # the average lenght of the path
         if snake.isGoalState(state):
-            # move the snake, with path actions, and the food is at snake's current location
- 
-            # print('score: ', snake.score)
-            # print('in goal state check: ', path)
-            # print(len(path))
             snake.score = len(path)
             total_length += snake.score
             num_paths += 1
             continue
-            #return path
         
         if state not in visited:
             visited.add(state)
 
             successors = snake.getSuccessors(state)
             random.shuffle(successors)
-            #print('successors: ',  successors)
 
             for successor in successors:
                 if successor[0] not in visited:
                     validState = (successor[0], path + [successor[1]])
                     stack.push(validState)
 
-    average_length = total_length / num_paths if num_paths > 0 else 0
-    #print('average length: ', average_length)
+    if num_paths == 0:
+        return 0
+    else:
+        average_length = total_length / num_paths
+        
     return average_length
 
 # Breadth-first search algorithm
@@ -73,7 +72,7 @@ def bfs(snake: snake):
     - at the end, return the complete path
 
     """
-    queue = util.Queue()
+    queue = Queue()
     visited = set()
 
     total_length = 0
@@ -86,33 +85,110 @@ def bfs(snake: snake):
     while not queue.isEmpty():
         state, path = queue.pop()
 
-        # if we've reached the goal state, return the path
+        # if we've reached the goal state, calculate the length of the path and continue to the return
+        # the average lenght of the path
         if snake.isGoalState(state):
-            # move the snake, with path actions, and the food is at snake's current location
- 
-            # print('score: ', snake.score)
-            # print('in goal state check: ', path)
-            # print(len(path))
             snake.score = len(path)
             total_length += snake.score
             num_paths += 1
             continue
-            #return path
         
         if state not in visited:
             visited.add(state)
 
             successors = snake.getSuccessors(state)
             random.shuffle(successors)
-            #print('successors: ',  successors)
 
             for successor in successors:
                 if successor[0] not in visited:
                     validState = (successor[0], path + [successor[1]])
                     queue.push(validState)
 
-    average_length = total_length / num_paths if num_paths > 0 else 0
-    #print('average length: ', average_length)
+    if num_paths == 0:
+        return 0
+    else:
+        average_length = total_length / num_paths
+
+    return average_length
+
+# Uniform Cost Search algorithm --> all states have the same priority
+def ucs(snake: snake):
+
+    priorityQueue = PriorityQueue()
+    visited = set()
+
+    total_length = 0
+    num_paths = 0
+
+    startState = snake.getStartState()
+    #                  (state,    path, cost) priority
+    priorityQueue.push((startState, [], 0), 0)
+
+    while not priorityQueue.isEmpty():
+        (state, path, cost) = priorityQueue.pop()
+
+        if snake.isGoalState(state):
+            snake.score = len(path)
+            total_length += snake.score
+            num_paths += 1
+            continue
+
+        if state not in visited:
+            visited.add(state)
+
+            successors = snake.getSuccessors(state)
+            random.shuffle(successors)
+
+            for successor in successors:
+                if successor[0] not in visited:
+                    validState = (successor[0], path + [successor[1]], cost + successor[2])
+                    priorityQueue.push(validState, cost + successor[2])
+    
+    if num_paths == 0:
+        return 0
+    else:
+        average_length = total_length / num_paths
+
+    return average_length
+
+def astar(snake: snake, heuristic):
+    
+    priorityQueue = PriorityQueue()
+    visited = set()
+
+    total_length = 0
+    num_paths = 0
+
+    startState = snake.getStartState()
+    #                  (state,    path, cost) priority
+    priorityQueue.push((startState, [], 0), 0)
+
+    while not priorityQueue.isEmpty():
+        (state, path, cost) = priorityQueue.pop()
+
+        if snake.isGoalState(state):
+            snake.score = len(path)
+            total_length += snake.score
+            num_paths += 1
+            continue
+
+        if state not in visited:
+            visited.add(state)
+
+            successors = snake.getSuccessors(state)
+            random.shuffle(successors)
+
+            for successor in successors:
+                if successor[0] not in visited:
+                    newCost = cost + successor[2]
+                    validState = (successor[0], path + [successor[1]], newCost)
+                    priorityQueue.push(validState, (heuristic(successor[0], snake.food.pos) + newCost))
+    
+    if num_paths == 0:
+        return 0
+    else:
+        average_length = total_length / num_paths
+
     return average_length
 
 s = snake((10, 10))
@@ -127,15 +203,25 @@ def gen_food_list():
         food_list.append(food)
 
 gen_food_list()
-total_average_length = 0
+total_average_length_dfs = 0
+total_average_length_bfs = 0
+total_average_length_ucs = 0
+total_average_length_astar = 0
+dfs_time = 0
 num_iterations = len(food_list)
 for i in range(0, len(food_list)):
-    #average_length = dfs(s)
-    average_length = bfs(s)
-    total_average_length += average_length
+    average_length_dfs = dfs(s)
+    average_length_bfs = bfs(s)
+    average_length_ucs = ucs(s)
+    average_length_astar = astar(s, manhattanHeuristic)
+    total_average_length_dfs += average_length_dfs
+    total_average_length_bfs += average_length_bfs
+    total_average_length_ucs += average_length_ucs
+    total_average_length_astar += average_length_astar
 
-print("Average length of paths:", round(total_average_length / num_iterations))
+print("Average length of DFS:", round(total_average_length_dfs / num_iterations))
+print("Average length of BFS:", round(total_average_length_bfs / num_iterations))
+print("Average length of UCS:", round(total_average_length_ucs / num_iterations))
+print("Average length of A*:", round(total_average_length_astar / num_iterations))
 
-# # Breadth-first search algorithm -- queue
-# # Uniform cost search algorithm -- priority queue, with all priorities = 1
 # # A* search algorithm -- priority queue
