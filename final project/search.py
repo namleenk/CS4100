@@ -21,6 +21,7 @@ def dfs(snake: snake):
     """
     stack = Stack()
     visited = set()
+    actions = []
 
     total_length = 0
     num_paths = 0
@@ -43,6 +44,7 @@ def dfs(snake: snake):
         
         if state not in visited:
             visited.add(state)
+            actions.append(path)
 
             successors = snake.getSuccessors(state)
             random.shuffle(successors)
@@ -58,8 +60,9 @@ def dfs(snake: snake):
         return 0
     else:
         average_length = total_length / num_paths
-        
-    #print('num_actions dfs = ', num_actions)
+
+    #print('dfs: ', actions[len(actions)-1])
+    print('dfs', snake.expanded)
     return average_length
 
 # Breadth-first search algorithm
@@ -78,6 +81,7 @@ def bfs(snake: snake):
     """
     queue = Queue()
     visited = set()
+    actions = []
 
     total_length = 0
     num_paths = 0
@@ -100,6 +104,7 @@ def bfs(snake: snake):
         
         if state not in visited:
             visited.add(state)
+            actions.append(path)
 
             successors = snake.getSuccessors(state)
             random.shuffle(successors)
@@ -116,7 +121,8 @@ def bfs(snake: snake):
     else:
         average_length = total_length / num_paths
 
-    #print('num_actions bfs = ', num_actions)
+    #print('bfs: ', actions[len(actions)-1])
+    print('bfs', snake.expanded)
     return average_length
 
 # Uniform Cost Search algorithm --> all states have the same priority
@@ -124,6 +130,7 @@ def ucs(snake: snake):
 
     priorityQueue = PriorityQueue()
     visited = set()
+    actions = []
 
     total_length = 0
     num_paths = 0
@@ -144,6 +151,7 @@ def ucs(snake: snake):
 
         if state not in visited:
             visited.add(state)
+            actions.append(path)
 
             successors = snake.getSuccessors(state)
             random.shuffle(successors)
@@ -159,13 +167,15 @@ def ucs(snake: snake):
     else:
         average_length = total_length / num_paths
 
-    #print('num_actions = ', num_actions)
+    #print('ucs: ', actions[len(actions)-1])
+    print('ucs', snake.expanded)
     return average_length
 
 def astar(snake: snake, heuristic):
     
     priorityQueue = PriorityQueue()
     visited = set()
+    actions = []
 
     total_length = 0
     num_paths = 0
@@ -185,6 +195,7 @@ def astar(snake: snake, heuristic):
 
         if state not in visited:
             visited.add(state)
+            actions.append(path)
 
             successors = snake.getSuccessors(state)
             random.shuffle(successors)
@@ -200,6 +211,8 @@ def astar(snake: snake, heuristic):
     else:
         average_length = total_length / num_paths
 
+    #print('astar: ', actions[len(actions)-1])
+    print('astar', snake.expanded)
     return average_length
 
 s = snake((10, 10))
@@ -207,38 +220,46 @@ s = snake((10, 10))
 food_list = []
 # generate a list of food at random location
 def gen_food_list():
-    for f in range(0, 399):
+    for f in range(0, 400):
         foodx = random.randrange(19)
         foody = random.randrange(19)
         food = (foodx, foody)
         food_list.append(food)
 
-gen_food_list()
-total_average_length_dfs = 0
-total_average_length_bfs = 0
-total_average_length_ucs = 0
-total_average_length_astar = 0
-dfs_time = 0
-num_iterations = len(food_list)
-for i in range(0, len(food_list)):
-    average_length_dfs = dfs(s)
-    average_length_bfs = bfs(s)
-    average_length_ucs = ucs(s)
-    average_length_astar = astar(s, manhattanHeuristic)
-    total_average_length_dfs += average_length_dfs
-    total_average_length_bfs += average_length_bfs
-    total_average_length_ucs += average_length_ucs
-    total_average_length_astar += average_length_astar
+# gen_food_list()
+# total_average_length_dfs = 0
+# total_average_length_bfs = 0
+# total_average_length_ucs = 0
+# total_average_length_astar = 0
+# astar_euclidean = 0
+# dfs_time = 0
+# num_iterations = len(food_list)
+# for i in range(0, len(food_list)):
+#     average_length_dfs = dfs(s)
+#     average_length_bfs = bfs(s)
+#     average_length_ucs = ucs(s)
+#     average_length_astar = astar(s, manhattanHeuristic)
+#     average_length_euclidean = astar(s, euclideanHeuristic)
 
-for i in range(0, len(food_list)):
-    average_length_dfs = dfs(s)
-    average_length_bfs = bfs(s)
-    total_average_length_dfs += average_length_dfs
-    total_average_length_bfs += average_length_bfs
+#     total_average_length_dfs += average_length_dfs
+#     total_average_length_bfs += average_length_bfs
+#     total_average_length_ucs += average_length_ucs
+#     total_average_length_astar += average_length_astar
+#     astar_euclidean += average_length_euclidean
 
-print("Average length of DFS:", round(total_average_length_dfs / num_iterations))
-print("Average length of BFS:", round(total_average_length_bfs / num_iterations))
-print("Average length of UCS:", round(total_average_length_ucs / num_iterations))
-print("Average length of A*:", round(total_average_length_astar / num_iterations))
 
-# # A* search algorithm -- priority queue
+# print("Average length of DFS:", round(total_average_length_dfs / num_iterations))
+# print("Average length of BFS:", round(total_average_length_bfs / num_iterations))
+# print("Average length of UCS:", round(total_average_length_ucs / num_iterations))
+# print("Average length of A* with manhattan heuristic:", round(total_average_length_astar / num_iterations))
+# print("Average length of A* with euclidean heuristic:", round(astar_euclidean / num_iterations))
+
+
+# prints out the list of directions each algorithm would take
+# (uncomment lines 256-260 to view these lists as well as the print statements prior to the return statement in each function)
+for i in range(0, 100):
+    dfs(s)
+    bfs(s)
+    ucs(s)
+    astar(s, manhattanHeuristic)
+    astar(s, euclideanHeuristic)

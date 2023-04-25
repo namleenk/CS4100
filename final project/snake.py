@@ -43,6 +43,7 @@ class snake(object):
         self.dirnx = 0
         self.dirny = 1
         self.food = cube(randomSnack(rows, self))
+        self.expanded = 0
 
         # since snake can wrap around the board, the walls analogous to pacman are the snake's body itself
         self.walls = []
@@ -225,7 +226,7 @@ class snake(object):
                 cost = manhattanDistance(curr_pos, next_pos)
                 successors.append((next_pos, direction, cost))
 
-
+        self.expanded += 1
         return successors
 
 # arbitrary heuristic to run the a* search algorithm
@@ -266,7 +267,3 @@ s = snake((10, 10))
 foodx = random.randrange(19)
 foody = random.randrange(19)
 food = (foodx, foody)
-g, h = s.head.pos
-# print('g', g)
-# print('h', h)
-# print(euclideanHeuristic(s, food))
