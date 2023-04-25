@@ -12,9 +12,9 @@ This repository contains a backend implementation of snake. Additionally, there 
 
 
 The purpose of this Snake AI is to compare the search algorithms in terms of the average length of the path to food (across all possible locations of the food), the list of actions taken, and the number of states expanded. You can use the following steps to run the code (assuming you have python3 installed):
-1. Download and setup the snake.py, util.py, and search.py files.
-2. Enter the `final project` directory.
-3. Run one of the following commands:
-  a. python3 search.py --comparator path_length
-  b. python3 search.py --comparator actions
-  c. python3 search.py --comparator states
+* Download and setup the snake.py, util.py, and search.py files.
+* Enter the `final project` directory.
+* Run one of the following commands:
+  1. python3 search.py --comparator path_length
+  2. python3 search.py --comparator actions
+  3. python3 search.py --comparator states
