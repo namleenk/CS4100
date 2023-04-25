@@ -98,7 +98,7 @@ class snake(object):
                     c.move(c.dirnx,c.dirny)
 
     # function to make the snake move given some actions - for the search algorithms
-    def action_move(self, key):
+    def actionMove(self, key):
         if key == 'left' and not self.dirnx == 1:
             self.dirnx = -1
             self.dirny = 0
@@ -172,7 +172,7 @@ class snake(object):
         self.body[-1].dirnx = dx
         self.body[-1].dirny = dy
     
-    def valid_pos(self, pos):
+    def validPos(self, pos):
         rows = 20
         x, y = pos
         if (x < 0 or x > rows-1 or y < 0 or y > rows-1):
@@ -214,7 +214,7 @@ class snake(object):
             nexty = int(y + dy)
 
             next_pos = (nextx, nexty)
-            if (next_pos not in walls_pos) and (next_pos != curr_pos) and (next_pos not in successors) and self.valid_pos(next_pos):
+            if (next_pos not in walls_pos) and (next_pos != curr_pos) and (next_pos not in successors) and self.validPos(next_pos):
                 if dx == 1:
                     direction = 'right'
                 elif dx == -1:
@@ -245,8 +245,8 @@ def manhattanHeuristic(s: snake, food: cube):
     fx2, fy2 = food
     return round(abs(sx1 - fx2) + abs(sy1 - fy2))
 
-# this shows the action_move function works -- REMOVE BEFORE SUBMITTING
-def show_moves(s):
+# this shows the actionMove function works -- REMOVE BEFORE SUBMITTING
+def showMoves(s):
     global width, rows, snack
     width = 500
     rows = 20
@@ -262,8 +262,8 @@ def show_moves(s):
         print(dir)
 
 s = snake((10, 10))
-#show_moves(s)
-#s.valid_pos((7, 15))
+#showMoves(s)
+#s.validPos((7, 15))
 foodx = random.randrange(19)
 foody = random.randrange(19)
 food = (foodx, foody)

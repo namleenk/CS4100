@@ -15,6 +15,6 @@ The purpose of this Snake AI is to compare the search algorithms in terms of the
 * Download and setup the snake.py, util.py, and search.py files.
 * Enter the `final project` directory.
 * Run one of the following commands:
-  1. python3 search.py --comparator path_length
-  2. python3 search.py --comparator actions
-  3. python3 search.py --comparator states
+  1. python3 search.py --comparator 'path_length'
+  2. python3 search.py --comparator 'actions'
+  3. python3 search.py --comparator 'states'

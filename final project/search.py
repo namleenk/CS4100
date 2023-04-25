@@ -27,8 +27,8 @@ def dfs(snake: snake):
     num_paths = 0
     num_actions = 0
 
-    startState = snake.getStartState()
-    stack.push((startState, []))
+    start_state = snake.getStartState()
+    stack.push((start_state, []))
 
     # while the stack is not empty, go through the states and their successors
     while not stack.isEmpty():
@@ -87,8 +87,8 @@ def bfs(snake: snake):
     num_paths = 0
     num_actions = 0
 
-    startState = snake.getStartState()
-    queue.push((startState, []))
+    start_state = snake.getStartState()
+    queue.push((start_state, []))
 
     # while the stack is not empty, go through the states and their successors
     while not queue.isEmpty():
@@ -136,9 +136,9 @@ def ucs(snake: snake):
     num_paths = 0
     num_actions = 0
 
-    startState = snake.getStartState()
+    start_state = snake.getStartState()
     #                  (state,    path, cost) priority
-    priorityQueue.push((startState, [], 0), 0)
+    priorityQueue.push((start_state, [], 0), 0)
 
     while not priorityQueue.isEmpty():
         (state, path, cost) = priorityQueue.pop()
@@ -180,9 +180,9 @@ def astar(snake: snake, heuristic):
     total_length = 0
     num_paths = 0
 
-    startState = snake.getStartState()
+    start_state = snake.getStartState()
     #                  (state,    path, cost) priority
-    priorityQueue.push((startState, [], 0), 0)
+    priorityQueue.push((start_state, [], 0), 0)
 
     while not priorityQueue.isEmpty():
         (state, path, cost) = priorityQueue.pop()
@@ -219,7 +219,7 @@ s = snake((10, 10))
 
 food_list = []
 # generate a list of food at random location
-def gen_food_list():
+def genFoodList():
     for f in range(0, 400):
         foodx = random.randrange(19)
         foody = random.randrange(19)
@@ -227,8 +227,8 @@ def gen_food_list():
         food_list.append(food)
 
 # find the average length of the path snake takes for each search algorithm for all 400 possible locations of food (on a 20x20 board)
-def average_path_length():
-    gen_food_list()
+def averagePathLength():
+    genFoodList()
     total_average_length_dfs = 0
     total_average_length_bfs = 0
     total_average_length_ucs = 0
@@ -256,7 +256,7 @@ def average_path_length():
     print("Average length of A* with euclidean heuristic:", round(astar_euclidean / num_iterations))
 
 # prints the list of actions taken with each search algorithm
-def actions_taken():
+def actionsTaken():
     print(dfs(s)[1])
     print(bfs(s)[1])
     print(ucs(s)[1])
@@ -264,7 +264,7 @@ def actions_taken():
     print(astar(s, euclideanHeuristic)[1])
 
 # returns the number of states expanded for 1 iteration of each search algorithm
-def states_expanded():
+def statesExpanded():
     print(dfs(s)[2])
     print(bfs(s)[2])
     print(ucs(s)[2])
@@ -273,19 +273,18 @@ def states_expanded():
 
 
 
-#average_path_length()
-#actions_taken()
-#states_expanded()
+# averagePathLength()
+# actionsTaken()
+# statesExpanded()
 
 # argparse for the user to compare the search algorithms in different ways
 parser = argparse.ArgumentParser()
-parser.add_argument('--comparator', required=True, default='path_length')
-parser.add_argument('help', )
+parser.add_argument('--comparator', type=str, required=True, default='path_length')
 args = parser.parse_args()
 
 if (args.comparator == 'path_length'):
-    average_path_length()
+    averagePathLength()
 elif args.comparator == 'actions':
-    actions_taken()
+    actionsTaken()
 elif args.comparator == 'states':
-    states_expanded()
+    statesExpanded()
