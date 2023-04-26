@@ -163,6 +163,7 @@ def ucs(snake: snake):
 
     return average_length, actions[len(actions)-1], snake.expanded
 
+# A* search --> priority is dependent on cost + heuristic
 def astar(snake: snake, heuristic):
     
     priorityQueue = PriorityQueue()
