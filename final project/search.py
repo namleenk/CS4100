@@ -1,8 +1,7 @@
 import argparse
 import random
-from snake import manhattanHeuristic, nullHeuristic, snake, euclideanHeuristic
+from snake import manhattanHeuristic, snake, euclideanHeuristic
 from util import Stack, Queue, PriorityQueue
-import time
 
 
 # Depth-first search algorithm
@@ -35,7 +34,7 @@ def dfs(snake: snake):
         state, path = stack.pop()
 
         # if we've reached the goal state, calculate the length of the path and continue to the return
-        # the average lenght of the path
+        # the average length of the path
         if snake.isGoalState(state):
             snake.score = len(path)
             total_length += snake.score
@@ -54,15 +53,12 @@ def dfs(snake: snake):
                     validState = (successor[0], path + [successor[1]])
                     stack.push(validState)
                     num_actions += 1
-                    #print('successor added - dfs')
 
     if num_paths == 0:
         return 0
     else:
         average_length = total_length / num_paths
 
-    #print('dfs: ', actions[len(actions)-1])
-    #print('dfs', snake.expanded)
     return average_length, actions[len(actions)-1], snake.expanded
 
 # Breadth-first search algorithm
@@ -121,8 +117,6 @@ def bfs(snake: snake):
     else:
         average_length = total_length / num_paths
 
-    #print('bfs: ', actions[len(actions)-1])
-    #print('bfs', snake.expanded)
     return average_length, actions[len(actions)-1], snake.expanded
 
 # Uniform Cost Search algorithm --> all states have the same priority
@@ -167,8 +161,6 @@ def ucs(snake: snake):
     else:
         average_length = total_length / num_paths
 
-    #print('ucs: ', actions[len(actions)-1])
-    #print('ucs', snake.expanded)
     return average_length, actions[len(actions)-1], snake.expanded
 
 def astar(snake: snake, heuristic):
@@ -211,8 +203,6 @@ def astar(snake: snake, heuristic):
     else:
         average_length = total_length / num_paths
 
-    #print('astar: ', actions[len(actions)-1])
-    #print('astar', snake.expanded)
     return average_length, actions[len(actions)-1], snake.expanded
 
 s = snake((10, 10))
@@ -265,11 +255,11 @@ def actionsTaken():
 
 # returns the number of states expanded for 1 iteration of each search algorithm
 def statesExpanded():
-    print(dfs(s)[2])
-    print(bfs(s)[2])
-    print(ucs(s)[2])
-    print(astar(s, manhattanHeuristic)[2])
-    print(astar(s, euclideanHeuristic)[2])
+    print('DFS:', dfs(s)[2])
+    print('BFS:',bfs(s)[2])
+    print('UCS:',ucs(s)[2])
+    print('A* with Manhattan heuristic:',astar(s, manhattanHeuristic)[2])
+    print('A* with Euclidean heuristic:',astar(s, euclideanHeuristic)[2])
 
 
 

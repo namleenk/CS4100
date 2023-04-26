@@ -1,5 +1,4 @@
 import random
-import pygame
 
 from util import manhattanDistance
 
@@ -49,53 +48,6 @@ class snake(object):
         self.walls = []
         self.walls.append(self.head)
         self.score = 0
-    
-    def move(self):
-        keys = pygame.key.get_pressed()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-        
-        # added an additional check to make sure the current direction is not the opposite of the key pressed
-        if keys[pygame.K_LEFT] and not self.dirnx == 1:
-            self.dirnx = -1
-            self.dirny = 0
-            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-
-        elif keys[pygame.K_RIGHT] and not self.dirnx == -1:
-            self.dirnx = 1
-            self.dirny = 0
-            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-
-        elif keys[pygame.K_UP] and not self.dirny == 1:
-            self.dirnx = 0
-            self.dirny = -1
-            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-
-        elif keys[pygame.K_DOWN] and not self.dirny == -1:
-            self.dirnx = 0
-            self.dirny = 1
-            self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
- 
-        for i, c in enumerate(self.body):
-            p = c.pos[:]
-            if p in self.turns:
-                turn = self.turns[p]
-                c.move(turn[0],turn[1])
-                if i == len(self.body)-1:
-                    self.turns.pop(p)
-            else:
-                # if snake exits the border of the grid, it comes back from the other side
-                if c.dirnx == -1 and c.pos[0] <= 0:
-                    c.pos = (c.rows-1, c.pos[1])
-                elif c.dirnx == 1 and c.pos[0] >= c.rows-1:
-                    c.pos = (0,c.pos[1])
-                elif c.dirny == 1 and c.pos[1] >= c.rows-1:
-                    c.pos = (c.pos[0], 0)
-                elif c.dirny == -1 and c.pos[1] <= 0:
-                    c.pos = (c.pos[0],c.rows-1)
-                else:
-                    c.move(c.dirnx,c.dirny)
 
     # function to make the snake move given some actions - for the search algorithms
     def actionMove(self, key):
@@ -176,12 +128,9 @@ class snake(object):
         rows = 20
         x, y = pos
         if (x < 0 or x > rows-1 or y < 0 or y > rows-1):
-            #print('false')
             return False
         if pos in self.walls:
-            #print('false - walls')
             return False
-        #print('true')
         return True
         
     # return the position of the head of the snake
@@ -202,8 +151,6 @@ class snake(object):
 
         successors = []
         actions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-        directions = ['down', 'up', 'right', 'left']
-        #x, y = curr_pos
         x = curr_pos[0]
         y = curr_pos[1]
 
@@ -233,13 +180,14 @@ class snake(object):
 def nullHeuristic(s: snake, food: cube):
     return 0
 
-# heuristic to calculate the shortest path distance, in a straight line
+# heuristic to calculate the shortest path distance, consider horizontal, vertical, and diagonal movements
 def euclideanHeuristic(s: snake, food: cube):
     sx1, sy1 = s
     #fx2, fy2 = food.pos
     fx2, fy2 = food
     return round(((fx2 - sx1) ** 2 + (fy2 - sy1) ** 2) ** 0.5)
 
+# heuristic to calculate the shortest path distance, considering only horizontal and vertical movements
 def manhattanHeuristic(s: snake, food: cube):
     sx1, sy1 = s
     fx2, fy2 = food
@@ -252,18 +200,11 @@ def showMoves(s):
     rows = 20
     s = snake((10, 10))
     snack = cube(randomSnack(rows, s))
-    clock = pygame.time.Clock()
 
     directions = ['right', 'right', 'right', 'right', 'right', 'down', 'down', 'down', 'down']
     for dir in directions:
-        pygame.time.delay(50)
-        clock.tick(10)
         s.action_move(dir)
         print(dir)
 
-s = snake((10, 10))
+#s = snake((10, 10))
 #showMoves(s)
-#s.validPos((7, 15))
-foodx = random.randrange(19)
-foody = random.randrange(19)
-food = (foodx, foody)

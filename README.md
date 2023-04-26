@@ -18,3 +18,11 @@ The purpose of this Snake AI is to compare the search algorithms in terms of the
   1. python3 search.py --comparator 'path_length'
   2. python3 search.py --comparator 'actions'
   3. python3 search.py --comparator 'states'
+
+
+Heuristics:
+Manhattan heuristic: The Manhattan heuristic calculates the Manhattan distance between two points which is the straight line distance in either the horizontal or vertical direction.
+
+Euclidean heuristic: The Euclidean heuristic calculates the Euclidean distance between two points which is the straight line distance in either the horiztonal, vertical, or diagonal direction.
+
+Comparison: Both heuristics result in the same average path length and length of the list of actions taken. However, the Manhattan heuristic expanded less states than the Euclidean heuristic because it only considers movement in the horizontal and vertical directions whereas the Euclidean heuristic adds movement in the diagonal direction.
